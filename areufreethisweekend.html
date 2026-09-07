@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will you go on a date with me?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue-deep:#122a52;
+    --blue-royal:#2c5f9e;
+    --blue-sky:#4fa8e0;
+    --blue-pale:#eaf4ff;
+    --yellow:#ffd200;
+    --yellow-deep:#f4b400;
+    --ink:#16213a;
+    --white:#ffffff;
+    --goggle-rim:#cfd8e3;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    font-family:'Nunito', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 15% 20%, rgba(255,255,255,0.10) 0, transparent 45%),
+      radial-gradient(circle at 85% 75%, rgba(255,255,255,0.08) 0, transparent 40%),
+      linear-gradient(160deg, var(--blue-deep) 0%, var(--blue-royal) 55%, var(--blue-sky) 100%);
+    overflow-x:hidden;
+    position:relative;
+  }
+
+  h1,h2,h3{
+    font-family:'Baloo 2', sans-serif;
+    margin:0;
+    line-height:1.15;
+  }
+
+  /* ---------- floating background decoration ---------- */
+  .scene{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .goggle-float{
+    position:absolute;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.9), rgba(255,255,255,0.15) 60%, transparent 70%);
+    opacity:0.35;
+    animation:drift 22s ease-in-out infinite;
+  }
+  .goggle-float.g1{ width:120px; height:120px; top:8%; left:6%; animation-duration:20s; }
+  .goggle-float.g2{ width:70px;  height:70px;  top:70%; left:12%; animation-duration:26s; animation-delay:2s; }
+  .goggle-float.g3{ width:160px; height:160px; top:60%; left:82%; animation-duration:24s; animation-delay:1s; }
+  .goggle-float.g4{ width:90px;  height:90px;  top:14%; left:88%; animation-duration:18s; animation-delay:3s; }
+  .banana-float{
+    position:absolute;
+    width:46px; height:16px;
+    background:var(--yellow);
+    border-radius:50% 50% 50% 50% / 90% 90% 10% 10%;
+    transform:rotate(-25deg);
+    opacity:0.25;
+    animation:drift 28s ease-in-out infinite;
+  }
+  .banana-float.b1{ top:35%; left:20%; animation-duration:30s; }
+  .banana-float.b2{ top:78%; left:70%; animation-duration:22s; animation-delay:4s; }
+
+  @keyframes drift{
+    0%,100%{ transform:translate(0,0) rotate(0deg); }
+    50%{ transform:translate(30px,-40px) rotate(12deg); }
+  }
+
+  /* ---------- progress dots ---------- */
+  .progress{
+    position:relative;
+    z-index:2;
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    padding:22px 0 6px;
+  }
+  .progress span{
+    width:10px; height:10px; border-radius:50%;
+    background:rgba(255,255,255,0.35);
+    transition:background .3s, transform .3s;
+  }
+  .progress span.done{ background:var(--yellow); }
+  .progress span.now{ background:var(--white); transform:scale(1.3); }
+
+  /* ---------- stage / card ---------- */
+  .stage{
+    position:relative;
+    z-index:2;
+    display:flex;
+    justify-content:center;
+    padding:18px 18px 60px;
+    min-height:calc(100vh - 60px);
+    align-items:center;
+  }
+  .card{
+    width:100%;
+    max-width:560px;
+    background:var(--blue-pale);
+    border-radius:28px;
+    padding:38px 34px 34px;
+    box-shadow:0 30px 60px rgba(8,20,45,0.35);
+    position:relative;
+  }
+  .screen{ display:none; animation:pop-in .45s ease; }
+  .screen.active{ display:block; }
+  @keyframes pop-in{
+    from{ opacity:0; transform:translateY(14px) scale(.98); }
+    to{ opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  .eyebrow{
+    display:inline-block;
+    font-family:'Baloo 2', sans-serif;
+    font-size:0.85rem;
+    color:var(--blue-royal);
+    background:rgba(79,168,224,0.15);
+    padding:4px 12px;
+    border-radius:20px;
+    margin-bottom:14px;
+  }
+  h2.title{ font-size:1.7rem; color:var(--blue-deep); }
+  p.subtitle{ margin-top:10px; font-size:1rem; color:#4a5a78; }
+
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family:'Baloo 2', sans-serif;
+    font-size:1.05rem;
+    border:none;
+    border-radius:16px;
+    padding:14px 26px;
+    cursor:pointer;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn:focus-visible{ outline:3px solid var(--blue-royal); outline-offset:2px; }
+  .btn-primary{
+    background:var(--yellow);
+    color:var(--blue-deep);
+    box-shadow:0 8px 0 var(--yellow-deep);
+  }
+  .btn-primary:hover{ transform:translateY(-2px); }
+  .btn-primary:active{ transform:translateY(4px); box-shadow:0 3px 0 var(--yellow-deep); }
+  .btn-primary:disabled{ opacity:.45; cursor:not-allowed; box-shadow:0 8px 0 rgba(0,0,0,0.1); }
+  .btn-ghost{
+    background:transparent;
+    color:var(--blue-royal);
+    border:2px solid var(--blue-royal);
+  }
+  .btn-ghost:hover{ background:rgba(44,95,158,0.08); }
+  .btn-secondary{
+    background:var(--white);
+    color:var(--blue-deep);
+    border:2px solid var(--goggle-rim);
+  }
+  .btn-secondary:hover{ border-color:var(--blue-sky); }
+
+  /* ---------- hero (invite screen) ---------- */
+  .bob-hero-wrap{
+    display:flex;
+    justify-content:center;
+    margin:-4px 0 6px;
+    animation:bob-float 3s ease-in-out infinite;
+  }
+  .bob-hero-wrap svg{ width:150px; height:190px; }
+  #arm-right{ transform-origin:96px 108px; animation:wave 1.5s ease-in-out infinite; }
+  #arm-left{ transform-origin:44px 112px; }
+  .eye-pupil{ animation:blink 4.5s infinite; transform-origin:center; }
+  @keyframes bob-float{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-8px); } }
+  @keyframes wave{ 0%,100%{ transform:rotate(0deg); } 50%{ transform:rotate(-30deg); } }
+  @keyframes blink{ 0%,88%,100%{ transform:scaleY(1); } 92%{ transform:scaleY(0.1); } }
+
+  .action-area{
+    position:relative;
+    min-height:150px;
+    margin-top:18px;
+  }
+  .action-area .btn-row{
+    display:flex;
+    gap:16px;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+  #yesBtn{ position:relative; transition:transform .15s, box-shadow .15s, font-size .2s; }
+  .mini-bob{
+    position:absolute;
+    top:-40px;
+    left:50%;
+    transform:translateX(-50%);
+    width:46px; height:56px;
+    pointer-events:none;
+    animation:bob-float 2.4s ease-in-out infinite;
+  }
+  #mini-arm{ transform-origin:31px 30px; animation:wave 1.3s ease-in-out infinite; }
+  #noBtn{
+    transition:left .18s ease, top .18s ease;
+  }
+  .dodge-caption{
+    margin-top:14px;
+    text-align:center;
+    font-size:0.9rem;
+    color:var(--blue-royal);
+    min-height:20px;
+  }
+
+  /* ---------- form elements ---------- */
+  .field{ margin:18px 0; }
+  .field label{ display:block; font-weight:700; margin-bottom:8px; color:var(--blue-deep); }
+  .field input[type="email"],
+  .field input[type="date"],
+  .field input[type="time"],
+  .field input[type="text"]{
+    width:100%;
+    padding:13px 14px;
+    border-radius:12px;
+    border:2px solid var(--goggle-rim);
+    font-size:1rem;
+    font-family:'Nunito', sans-serif;
+    background:var(--white);
+    color:var(--ink);
+  }
+  .field input:focus{ outline:none; border-color:var(--blue-sky); }
+  .hint{ font-size:0.85rem; color:#5c6c8a; margin-top:6px; }
+
+  .option-grid{ display:flex; gap:14px; margin-top:20px; }
+  .option-card{
+    flex:1;
+    background:var(--white);
+    border:2px solid var(--goggle-rim);
+    border-radius:16px;
+    padding:20px 14px;
+    text-align:center;
+    cursor:pointer;
+    font-family:'Baloo 2', sans-serif;
+    font-size:1.1rem;
+    color:var(--blue-deep);
+    transition:border-color .15s, transform .15s;
+  }
+  .option-card:hover{ transform:translateY(-3px); }
+  .option-card.selected{ border-color:var(--blue-sky); background:var(--blue-pale); box-shadow:0 0 0 3px rgba(79,168,224,0.25) inset; }
+  .option-emoji{ font-size:1.8rem; display:block; margin-bottom:6px; }
+
+  .restaurant-card{
+    margin-top:18px;
+    background:var(--white);
+    border-radius:18px;
+    padding:26px 20px;
+    text-align:center;
+    border:2px dashed var(--blue-sky);
+  }
+  .restaurant-card .name{
+    font-family:'Baloo 2', sans-serif;
+    font-size:1.5rem;
+    color:var(--blue-deep);
+  }
+
+  .menu-columns{ display:flex; gap:22px; margin-top:18px; flex-wrap:wrap; }
+  .menu-col{ flex:1; min-width:180px; }
+  .menu-col h3{ font-size:1rem; color:var(--blue-royal); margin-bottom:10px; }
+  .check-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--white);
+    border:2px solid var(--goggle-rim);
+    border-radius:10px;
+    padding:9px 12px;
+    margin-bottom:8px;
+    font-size:0.95rem;
+  }
+  .check-row input{ width:17px; height:17px; accent-color:var(--blue-sky); }
+
+  .calendar-link{
+    display:inline-block;
+    margin-top:6px;
+    font-size:0.92rem;
+    color:var(--blue-royal);
+    text-decoration:none;
+    border-bottom:2px solid var(--blue-sky);
+  }
+
+  .actions-footer{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:26px;
+    gap:12px;
+    flex-wrap:wrap;
+  }
+
+  .summary-list{ margin-top:18px; }
+  .summary-row{
+    display:flex;
+    justify-content:space-between;
+    gap:14px;
+    padding:11px 0;
+    border-bottom:1px solid rgba(44,95,158,0.15);
+    font-size:0.95rem;
+  }
+  .summary-row .label{ color:#5c6c8a; }
+  .summary-row .value{ font-weight:700; color:var(--blue-deep); text-align:right; }
+
+  .bob-small-wrap{ display:flex; justify-content:center; margin:6px 0 4px; animation:bob-float 3s ease-in-out infinite; }
+  .bob-small-wrap svg{ width:90px; height:114px; }
+
+  canvas#confetti{
+    position:fixed; inset:0; pointer-events:none; z-index:5;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .goggle-float, .banana-float, .bob-hero-wrap, #arm-right, .eye-pupil,
+    .mini-bob, #mini-arm, .bob-small-wrap{ animation:none !important; }
+  }
+
+  @media (max-width:480px){
+    .card{ padding:28px 20px 26px; border-radius:22px; }
+    .option-grid{ flex-direction:column; }
+    .actions-footer{ flex-direction:column-reverse; align-items:stretch; }
+    .actions-footer .btn{ width:100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="goggle-float g1"></div>
+  <div class="goggle-float g2"></div>
+  <div class="goggle-float g3"></div>
+  <div class="goggle-float g4"></div>
+  <div class="banana-float b1"></div>
+  <div class="banana-float b2"></div>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<div class="progress" id="progressDots"></div>
+
+<main class="stage">
+  <div class="card">
+
+    <!-- SCREEN 1: INVITE -->
+    <section class="screen active" data-screen="invite">
+      <div class="bob-hero-wrap">
+        <svg viewBox="0 0 150 190" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="75" cy="100" rx="52" ry="78" fill="#FFD200"/>
+          <path d="M28 128 Q75 118 122 128 L118 178 Q75 190 32 178 Z" fill="#2C5F9E"/>
+          <rect x="52" y="118" width="8" height="26" fill="#2C5F9E"/>
+          <rect x="90" y="118" width="8" height="26" fill="#2C5F9E"/>
+          <circle cx="75" cy="132" r="7" fill="#1B3A6B"/>
+          <g id="arm-right"><rect x="112" y="88" width="16" height="52" rx="8" fill="#FFD200"/><ellipse cx="120" cy="142" rx="11" ry="9" fill="#22282f"/></g>
+          <g id="arm-left"><rect x="22" y="92" width="16" height="50" rx="8" fill="#FFD200"/><ellipse cx="30" cy="144" rx="11" ry="9" fill="#22282f"/></g>
+          <ellipse cx="55" cy="168" rx="13" ry="9" fill="#22282f"/>
+          <ellipse cx="95" cy="168" rx="13" ry="9" fill="#22282f"/>
+          <path d="M58 40 Q60 30 66 32" stroke="#22282f" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M92 40 Q90 30 84 32" stroke="#22282f" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <circle cx="55" cy="62" r="20" fill="#f4f7fa" stroke="#cfd8e3" stroke-width="5"/>
+          <circle cx="55" cy="62" r="11" fill="#3b7fc4" class="eye-pupil"/>
+          <circle cx="58" cy="59" r="3.2" fill="#0e1b2e"/>
+          <circle cx="95" cy="62" r="20" fill="#f4f7fa" stroke="#cfd8e3" stroke-width="5"/>
+          <circle cx="95" cy="62" r="11" fill="#274d78" class="eye-pupil"/>
+          <circle cx="98" cy="59" r="3.2" fill="#0e1b2e"/>
+          <path d="M60 88 Q75 98 90 88" stroke="#22282f" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+
+      <h2 class="title" style="text-align:center;">Before you say anything —</h2>
+      <p class="subtitle" style="text-align:center;">will you go on a date with me?</p>
+
+      <div class="action-area" id="actionArea">
+        <div class="btn-row">
+          <button class="btn btn-primary" id="yesBtn">
+            Yes, obviously
+            <svg class="mini-bob" viewBox="0 0 62 76" xmlns="http://www.w3.org/2000/svg">
+              <ellipse cx="31" cy="42" rx="22" ry="32" fill="#FFD200"/>
+              <path d="M11 54 Q31 48 51 54 L49 72 Q31 78 13 72 Z" fill="#2C5F9E"/>
+              <g id="mini-arm"><rect x="46" y="34" width="8" height="20" rx="4" fill="#FFD200"/><circle cx="50" cy="56" r="5" fill="#22282f"/></g>
+              <circle cx="24" cy="26" r="9" fill="#f4f7fa" stroke="#cfd8e3" stroke-width="2.5"/>
+              <circle cx="24" cy="26" r="5" fill="#3b7fc4"/>
+              <circle cx="38" cy="26" r="9" fill="#f4f7fa" stroke="#cfd8e3" stroke-width="2.5"/>
+              <circle cx="38" cy="26" r="5" fill="#274d78"/>
+              <path d="M25 38 Q31 43 37 38" stroke="#22282f" stroke-width="2" fill="none" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <button class="btn btn-ghost" id="noBtn">No</button>
+        </div>
+        <p class="dodge-caption" id="dodgeCaption">&nbsp;</p>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: EMAIL -->
+    <section class="screen" data-screen="email">
+      <span class="eyebrow">Step 1 of 6</span>
+      <h2 class="title">Where can I send the details?</h2>
+      <p class="subtitle">Just your email — nothing spammy, promise.</p>
+      <div class="field">
+        <label for="emailInput">Email address</label>
+        <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="actions-footer">
+        <span></span>
+        <button class="btn btn-primary" id="emailContinue" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: MEAL -->
+    <section class="screen" data-screen="meal">
+      <span class="eyebrow">Step 2 of 6</span>
+      <h2 class="title">Lunch or dinner?</h2>
+      <p class="subtitle">Pick whichever fits your day better.</p>
+      <div class="option-grid">
+        <div class="option-card" data-meal="Lunch"><span class="option-emoji">☀️</span>Lunch</div>
+        <div class="option-card" data-meal="Dinner"><span class="option-emoji">🌙</span>Dinner</div>
+      </div>
+      <div class="actions-footer">
+        <button class="btn btn-secondary" data-back="email">Back</button>
+        <button class="btn btn-primary" id="mealContinue" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: RESTAURANT -->
+    <section class="screen" data-screen="restaurant">
+      <span class="eyebrow">Step 3 of 6</span>
+      <h2 class="title">Here's where I'm thinking</h2>
+      <p class="subtitle">(Trust me on this one.)</p>
+      <div class="restaurant-card">
+        <div class="name" id="restaurantName">Restaurant name</div>
+      </div>
+      <div class="actions-footer">
+        <button class="btn btn-secondary" data-back="meal">Back</button>
+        <button class="btn btn-primary" data-next="menu">Continue</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: MENU -->
+    <section class="screen" data-screen="menu">
+      <span class="eyebrow">Step 4 of 6</span>
+      <h2 class="title">In case you want a preview</h2>
+      <p class="subtitle">Pick whatever looks good — sharing is allowed.</p>
+      <div class="menu-columns">
+        <div class="menu-col">
+          <h3>Food</h3>
+          <div id="foodList"></div>
+        </div>
+        <div class="menu-col">
+          <h3>Drinks</h3>
+          <div id="drinkList"></div>
+        </div>
+      </div>
+      <div class="actions-footer">
+        <button class="btn btn-secondary" data-back="restaurant">Back</button>
+        <button class="btn btn-primary" data-next="schedule">Continue</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 6: SCHEDULE / CALENDAR -->
+    <section class="screen" data-screen="schedule">
+      <span class="eyebrow">Step 5 of 6</span>
+      <h2 class="title">When works for you?</h2>
+      <p class="subtitle">Pick a date and time — I'll build the calendar invite.</p>
+      <div id="availabilityWrap" class="hint" style="display:none; margin-bottom:6px;">
+        Not sure when I'm free? <a class="calendar-link" id="availabilityLink" href="#" target="_blank" rel="noopener">See my availability →</a>
+      </div>
+      <div class="field">
+        <label for="dateInput">Date</label>
+        <input type="date" id="dateInput">
+      </div>
+      <div class="field">
+        <label for="timeInput">Time</label>
+        <input type="time" id="timeInput">
+      </div>
+      <a class="calendar-link" id="gcalLink" href="#" target="_blank" rel="noopener" style="display:none;">＋ Add to Google Calendar</a>
+      <div class="actions-footer">
+        <button class="btn btn-secondary" data-back="menu">Back</button>
+        <button class="btn btn-primary" id="scheduleContinue" disabled>Continue</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 7: CURFEW -->
+    <section class="screen" data-screen="curfew">
+      <span class="eyebrow">Step 6 of 6</span>
+      <h2 class="title">One practical question</h2>
+      <p class="subtitle">What time should you be home by?</p>
+      <div class="field">
+        <label for="curfewInput">Home by</label>
+        <input type="time" id="curfewInput">
+      </div>
+      <div class="actions-footer">
+        <button class="btn btn-secondary" data-back="schedule">Back</button>
+        <button class="btn btn-primary" id="curfewContinue" disabled>See summary</button>
+      </div>
+    </section>
+
+    <!-- SCREEN 8: SUMMARY -->
+    <section class="screen" data-screen="summary">
+      <div class="bob-small-wrap">
+        <svg viewBox="0 0 90 114" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="45" cy="58" rx="32" ry="47" fill="#FFD200"/>
+          <path d="M15 76 Q45 68 75 76 L72 106 Q45 114 18 106 Z" fill="#2C5F9E"/>
+          <circle cx="33" cy="36" r="12" fill="#f4f7fa" stroke="#cfd8e3" stroke-width="3.5"/>
+          <circle cx="33" cy="36" r="6.5" fill="#3b7fc4"/>
+          <circle cx="57" cy="36" r="12" fill="#f4f7fa" stroke="#cfd8e3" stroke-width="3.5"/>
+          <circle cx="57" cy="36" r="6.5" fill="#274d78"/>
+          <path d="M34 52 Q45 60 56 52" stroke="#22282f" stroke-width="3" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h2 class="title" style="text-align:center;">It's a date.</h2>
+      <p class="subtitle" style="text-align:center;">Bee-do-bee-do! Here's everything, locked in.</p>
+      <div class="summary-list" id="summaryList"></div>
+      <div class="actions-footer">
+        <a class="btn btn-secondary" id="mailtoBtn" href="#">Email me your answers</a>
+        <a class="btn btn-primary" id="gcalLinkFinal" href="#" target="_blank" rel="noopener">＋ Add to calendar</a>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script>
+/* =========================================================================
+   EDIT ME — everything below is the stuff you'll want to customize.
+   ======================================================================= */
+const CONFIG = {
+  yourName: "your date",                     // shows up in the confirmation email
+  yourEmail: "you@example.com",               // where her "Email me your answers" button sends to
+  restaurantName: "Cali's Centro",   // <-- put the real restaurant here
+  yourCalendarLink: "",                       // optional: paste a Calendly / booking link here, or leave "" to hide
+  menuItems: ["Truffle pasta", "Pesto", "Chickwn Alfredo", "Garden salad", "Chocolate lava cake"],
+  drinks: ["Coffee", "Iced tea", "Lemonade", "Matcha", "Hot chocolate"]
+};
+/* ===================================================================== */
+
+const state = { email:"", meal:"", food:[], drinks:[], date:"", time:"", curfew:"" };
+const steps = ["invite","email","meal","restaurant","menu","schedule","curfew","summary"];
+let current = 0;
+
+// ---------- progress dots ----------
+const dotsWrap = document.getElementById('progressDots');
+steps.forEach((_, i) => {
+  const d = document.createElement('span');
+  dotsWrap.appendChild(d);
+});
+function renderDots(){
+  [...dotsWrap.children].forEach((d,i)=>{
+    d.classList.toggle('done', i < current);
+    d.classList.toggle('now', i === current);
+  });
+}
+
+function showScreen(name){
+  const idx = steps.indexOf(name);
+  if(idx === -1) return;
+  current = idx;
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.toggle('active', s.dataset.screen === name);
+  });
+  renderDots();
+  window.scrollTo({top:0, behavior:'smooth'});
+  if(name === "restaurant") document.getElementById('restaurantName').textContent = CONFIG.restaurantName;
+  if(name === "menu") buildMenu();
+  if(name === "summary") buildSummary();
+}
+renderDots();
+
+// wire up simple back/next buttons
+document.querySelectorAll('[data-next]').forEach(b=>{
+  b.addEventListener('click', ()=> showScreen(b.dataset.next));
+});
+document.querySelectorAll('[data-back]').forEach(b=>{
+  b.addEventListener('click', ()=> showScreen(b.dataset.back));
+});
+
+// ---------- Yes / No dodge logic ----------
+const noBtn = document.getElementById('noBtn');
+const yesBtn = document.getElementById('yesBtn');
+const actionArea = document.getElementById('actionArea');
+const dodgeCaption = document.getElementById('dodgeCaption');
+let dodgeCount = 0;
+const captions = [
+  "Nice try.",
+  "So close!",
+  "The 'no' button is camera shy.",
+  "It's not you, it's the button.",
+  "Bob has vetoed that option.",
+  "Still a yes-only zone.",
+  "This button only responds to bananas.",
+  "At this point it's basically a game."
+];
+
+function dodge(){
+  const areaW = actionArea.clientWidth;
+  const areaH = actionArea.clientHeight;
+  const btnW = noBtn.offsetWidth;
+  const btnH = noBtn.offsetHeight;
+  const maxX = Math.max(areaW - btnW - 8, 8);
+  const maxY = Math.max(areaH - btnH - 8, 8);
+  const x = Math.random() * maxX;
+  const y = Math.random() * maxY;
+  noBtn.style.position = 'absolute';
+  noBtn.style.left = x + 'px';
+  noBtn.style.top = y + 'px';
+  dodgeCount++;
+  dodgeCaption.textContent = captions[Math.min(dodgeCount-1, captions.length-1)];
+  const grow = Math.min(1 + dodgeCount * 0.03, 1.35);
+  yesBtn.style.fontSize = (1.05 * grow) + "rem";
+}
+
+noBtn.addEventListener('pointerenter', dodge);
+noBtn.addEventListener('touchstart', (e)=>{ e.preventDefault(); dodge(); }, {passive:false});
+noBtn.addEventListener('click', (e)=>{ e.preventDefault(); dodge(); });
+
+yesBtn.addEventListener('click', ()=>{
+  burstConfetti();
+  setTimeout(()=> showScreen('email'), 350);
+});
+
+// ---------- email step ----------
+const emailInput = document.getElementById('emailInput');
+const emailContinue = document.getElementById('emailContinue');
+emailInput.addEventListener('input', ()=>{
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value);
+  emailContinue.disabled = !valid;
+});
+emailContinue.addEventListener('click', ()=>{
+  state.email = emailInput.value.trim();
+  showScreen('meal');
+});
+
+// ---------- meal step ----------
+const mealCards = document.querySelectorAll('[data-meal]');
+const mealContinue = document.getElementById('mealContinue');
+mealCards.forEach(card=>{
+  card.addEventListener('click', ()=>{
+    mealCards.forEach(c=>c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.meal = card.dataset.meal;
+    mealContinue.disabled = false;
+  });
+});
+mealContinue.addEventListener('click', ()=> showScreen('restaurant'));
+
+// ---------- menu step ----------
+function buildMenu(){
+  const foodList = document.getElementById('foodList');
+  const drinkList = document.getElementById('drinkList');
+  foodList.innerHTML = "";
+  drinkList.innerHTML = "";
+  CONFIG.menuItems.forEach((item, i)=>{
+    const id = "food-" + i;
+    const row = document.createElement('label');
+    row.className = "check-row";
+    row.innerHTML = `<input type="checkbox" id="${id}" value="${item}"> <span>${item}</span>`;
+    row.querySelector('input').addEventListener('change', e=>{
+      if(e.target.checked) state.food.push(item);
+      else state.food = state.food.filter(f=>f!==item);
+    });
+    foodList.appendChild(row);
+  });
+  CONFIG.drinks.forEach((item, i)=>{
+    const id = "drink-" + i;
+    const row = document.createElement('label');
+    row.className = "check-row";
+    row.innerHTML = `<input type="checkbox" id="${id}" value="${item}"> <span>${item}</span>`;
+    row.querySelector('input').addEventListener('change', e=>{
+      if(e.target.checked) state.drinks.push(item);
+      else state.drinks = state.drinks.filter(f=>f!==item);
+    });
+    drinkList.appendChild(row);
+  });
+}
+
+// ---------- schedule step ----------
+const dateInput = document.getElementById('dateInput');
+const timeInput = document.getElementById('timeInput');
+const scheduleContinue = document.getElementById('scheduleContinue');
+const gcalLink = document.getElementById('gcalLink');
+const availabilityWrap = document.getElementById('availabilityWrap');
+const availabilityLink = document.getElementById('availabilityLink');
+
+const today = new Date().toISOString().split('T')[0];
+dateInput.min = today;
+
+if(CONFIG.yourCalendarLink){
+  availabilityWrap.style.display = 'block';
+  availabilityLink.href = CONFIG.yourCalendarLink;
+}
+
+function toGCalDate(dateStr, timeStr, addHours){
+  const start = new Date(dateStr + "T" + timeStr);
+  const end = new Date(start.getTime() + addHours*60*60*1000);
+  const fmt = d => d.toISOString().replace(/[-:]/g,'').split('.')[0] + "Z";
+  return fmt(start) + "/" + fmt(end);
+}
+
+function buildGCalUrl(){
+  if(!dateInput.value || !timeInput.value) return "";
+  const dates = toGCalDate(dateInput.value, timeInput.value, 2);
+  const title = encodeURIComponent((state.meal || "Our") + " date");
+  const loc = encodeURIComponent(CONFIG.restaurantName);
+  const details = encodeURIComponent("Looking forward to it!");
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&location=${loc}&details=${details}`;
+}
+
+function checkSchedule(){
+  const ok = dateInput.value && timeInput.value;
+  scheduleContinue.disabled = !ok;
+  if(ok){
+    gcalLink.style.display = 'inline-block';
+    gcalLink.href = buildGCalUrl();
+  } else {
+    gcalLink.style.display = 'none';
+  }
+}
+dateInput.addEventListener('input', checkSchedule);
+timeInput.addEventListener('input', checkSchedule);
+
+scheduleContinue.addEventListener('click', ()=>{
+  state.date = dateInput.value;
+  state.time = timeInput.value;
+  showScreen('curfew');
+});
+
+// ---------- curfew step ----------
+const curfewInput = document.getElementById('curfewInput');
+const curfewContinue = document.getElementById('curfewContinue');
+curfewInput.addEventListener('input', ()=>{
+  curfewContinue.disabled = !curfewInput.value;
+});
+curfewContinue.addEventListener('click', ()=>{
+  state.curfew = curfewInput.value;
+  showScreen('summary');
+});
+
+// ---------- summary step ----------
+function fmtTime(t){
+  if(!t) return "—";
+  const [h,m] = t.split(':');
+  const hour = ((+h + 11) % 12) + 1;
+  const suffix = +h >= 12 ? "PM" : "AM";
+  return `${hour}:${m} ${suffix}`;
+}
+function fmtDate(d){
+  if(!d) return "—";
+  return new Date(d + "T00:00").toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+}
+
+function buildSummary(){
+  const list = document.getElementById('summaryList');
+  const rows = [
+    ["Meal", state.meal || "—"],
+    ["Restaurant", CONFIG.restaurantName],
+    ["Food picks", state.food.length ? state.food.join(", ") : "Surprise me"],
+    ["Drink picks", state.drinks.length ? state.drinks.join(", ") : "Surprise me"],
+    ["Date", fmtDate(state.date)],
+    ["Time", fmtTime(state.time)],
+    ["Home by", fmtTime(state.curfew)]
+  ];
+  list.innerHTML = rows.map(([label,value])=>
+    `<div class="summary-row"><span class="label">${label}</span><span class="value">${value}</span></div>`
+  ).join("");
+
+  const gcalFinal = document.getElementById('gcalLinkFinal');
+  const url = buildGCalUrl();
+  if(url){
+    gcalFinal.href = url;
+    gcalFinal.style.display = 'inline-block';
+  } else {
+    gcalFinal.style.display = 'none';
+  }
+
+  const mailtoBtn = document.getElementById('mailtoBtn');
+  const subject = encodeURIComponent("It's a date!");
+  const body = encodeURIComponent(
+    `Here's everything:\n\n` +
+    `Meal: ${state.meal}\n` +
+    `Restaurant: ${CONFIG.restaurantName}\n` +
+    `Food picks: ${state.food.join(", ") || "Surprise me"}\n` +
+    `Drink picks: ${state.drinks.join(", ") || "Surprise me"}\n` +
+    `Date: ${fmtDate(state.date)}\n` +
+    `Time: ${fmtTime(state.time)}\n` +
+    `Home by: ${fmtTime(state.curfew)}\n\n` +
+    `— sent from the invitation, ${CONFIG.yourName}`
+  );
+  mailtoBtn.href = `mailto:${CONFIG.yourEmail}?subject=${subject}&body=${body}`;
+}
+
+// ---------- confetti ----------
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+function resizeCanvas(){ canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+function burstConfetti(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const colors = ['#FFD200', '#4FA8E0', '#ffffff', '#2C5F9E'];
+  const particles = Array.from({length:110}, ()=>({
+    x: canvas.width/2 + (Math.random()-0.5)*200,
+    y: canvas.height*0.35,
+    vx: (Math.random()-0.5)*9,
+    vy: Math.random()*-9 - 2,
+    size: Math.random()*7+4,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    rot: Math.random()*360,
+    vrot: (Math.random()-0.5)*10
+  }));
+  let frame = 0;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    frame++;
+    particles.forEach(p=>{
+      p.vy += 0.28;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vrot;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size*0.6);
+      ctx.restore();
+    });
+    if(frame < 90){
+      requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+    }
+  }
+  tick();
+}
+</script>
+</body>
+</html>
